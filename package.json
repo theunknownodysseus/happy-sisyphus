@@ -1,6 +1,6 @@
 {
   "name": "happy-sisyphus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A modern desktop chat frontend for the Bonsai CLI AI assistant, runnable with a single npx command.",
   "main": "./out/main/index.js",
   "type": "module",
