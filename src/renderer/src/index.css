@@ -1,0 +1,48 @@
+@import '@xterm/xterm/css/xterm.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #0a0b0f;
+  color: #e5e7eb;
+  font-family: Inter, system-ui, sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Scrollbars */
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #272c3d;
+  border-radius: 6px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #343b52;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.terminal-host .xterm {
+  padding: 12px 14px;
+}
+
+.text-selectable {
+  user-select: text;
+}
