@@ -1,11 +1,22 @@
 {
-  "name": "bonsai-desktop",
-  "version": "0.1.0",
-  "description": "A modern desktop chat frontend for the Bonsai CLI AI assistant.",
+  "name": "happy-sisyphus",
+  "version": "1.0.0",
+  "description": "A modern desktop chat frontend for the Bonsai CLI AI assistant, runnable with a single npx command.",
   "main": "./out/main/index.js",
-  "author": "Bonsai Desktop",
-  "license": "MIT",
   "type": "module",
+  "private": false,
+  "bin": {
+    "happy-sisyphus": "bin/index.js"
+  },
+  "files": [
+    "bin/",
+    "out/"
+  ],
+  "author": "theunknownodysseus",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
@@ -13,16 +24,17 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "package": "electron-vite build && electron-builder"
+    "package": "electron-vite build && electron-builder",
+    "prepublishOnly": "electron-vite build"
   },
   "dependencies": {
     "@lydell/node-pty": "^1.1.0",
-    "@monaco-editor/react": "^4.7.0",
     "chokidar": "^3.6.0",
-    "monaco-editor": "^0.55.1"
+    "electron": "^31.1.0"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.6.0",
+    "@monaco-editor/react": "^4.7.0",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -32,10 +44,10 @@
     "@xterm/addon-web-links": "^0.11.0",
     "@xterm/xterm": "^5.5.0",
     "autoprefixer": "^10.4.19",
-    "electron": "^31.1.0",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
     "framer-motion": "^11.2.12",
+    "monaco-editor": "^0.55.1",
     "postcss": "^8.4.39",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
