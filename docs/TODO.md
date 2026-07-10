@@ -30,7 +30,7 @@ group. Check items off as they land.
 
 ## Editor view
 
-- [ ] **File tabs** — support multiple open files with a tab strip above
+- [x] **File tabs** — support multiple open files with a tab strip above
       CodeEditor, not just a single `path` in state.
 - [ ] **Fuzzy file finder (Ctrl/⌘+P)** — jump to any file without walking
       the tree.
