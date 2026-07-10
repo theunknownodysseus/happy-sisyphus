@@ -93,7 +93,7 @@ function createWindow(): void {
     minWidth: 940,
     minHeight: 620,
     show: false,
-    backgroundColor: '#0a0b0f',
+    backgroundColor: '#07080a',
     title: 'Bonsai Desktop',
     autoHideMenuBar: true,
     webPreferences: {
