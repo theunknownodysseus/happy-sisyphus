@@ -1,5 +1,5 @@
 # happy-sisyphus
-![banner](happy.png)
+![banner](./assets/happy.png)
 > A modern desktop chat frontend for the **[Bonsai CLI](https://trybons.ai)** AI assistant — runnable with a single `npx` command.
 
 [![npm version](https://img.shields.io/npm/v/happy-sisyphus.svg)](https://www.npmjs.com/package/happy-sisyphus)
