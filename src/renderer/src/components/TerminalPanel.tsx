@@ -3,15 +3,18 @@ import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import type { SessionHook } from '../hooks/useSession'
+import type { Theme } from '../hooks/useTheme'
+import { xtermTheme } from '../xterm-theme'
 
 interface Props {
   session: SessionHook
+  theme: Theme
 }
 
 // The live Bonsai TUI, rendered faithfully via xterm.js. Raw keystrokes typed
 // while the terminal is focused are forwarded to the PTY; PTY output is written
 // straight back. On (re)mount we replay the buffer captured by the main process.
-export default function TerminalPanel({ session }: Props): JSX.Element {
+export default function TerminalPanel({ session, theme }: Props): JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
   const fitRef = useRef<FitAddon | null>(null)
@@ -25,22 +28,7 @@ export default function TerminalPanel({ session }: Props): JSX.Element {
       lineHeight: 1.2,
       cursorBlink: true,
       allowProposedApi: true,
-      theme: {
-        background: '#0e1015',
-        foreground: '#d6dae4',
-        cursor: '#4ade80',
-        selectionBackground: '#2f3550',
-        black: '#12141c',
-        brightBlack: '#4b5164',
-        green: '#4ade80',
-        brightGreen: '#86efac',
-        cyan: '#38bdf8',
-        blue: '#60a5fa',
-        magenta: '#c084fc',
-        yellow: '#fbbf24',
-        red: '#f87171',
-        white: '#d6dae4'
-      }
+      theme: xtermTheme(theme)
     })
     const fit = new FitAddon()
     term.loadAddon(fit)
@@ -85,8 +73,13 @@ export default function TerminalPanel({ session }: Props): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Re-theme the live terminal instance in place when the app theme flips.
+  useEffect(() => {
+    if (termRef.current) termRef.current.options.theme = xtermTheme(theme)
+  }, [theme])
+
   return (
-    <div className="relative flex-1 min-h-0 rounded-xl border border-base-700 bg-base-850 overflow-hidden">
+    <div className="relative flex-1 min-h-0 rounded-xl bg-surface2 overflow-hidden">
       <div ref={hostRef} className="terminal-host absolute inset-0" />
     </div>
   )

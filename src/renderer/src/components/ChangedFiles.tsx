@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { FilePlus, FileText, FileX } from 'lucide-react'
 import { useState } from 'react'
 import type { ChangedFile } from '../../../shared/types'
 
@@ -6,10 +7,10 @@ interface Props {
   files: ChangedFile[]
 }
 
-const KIND_ICON: Record<ChangedFile['kind'], { icon: string; cls: string }> = {
-  add: { icon: '＋', cls: 'text-accent' },
-  change: { icon: '✓', cls: 'text-sky-400' },
-  unlink: { icon: '−', cls: 'text-red-400' }
+const KIND_META: Record<ChangedFile['kind'], { icon: typeof FileText; cls: string }> = {
+  add: { icon: FilePlus, cls: 'text-success' },
+  change: { icon: FileText, cls: 'text-fg3' },
+  unlink: { icon: FileX, cls: 'text-danger' }
 }
 
 export default function ChangedFiles({ files }: Props): JSX.Element {
@@ -28,22 +29,25 @@ export default function ChangedFiles({ files }: Props): JSX.Element {
   }
 
   return (
-    <aside className="w-72 shrink-0 flex flex-col border-l border-base-700 bg-base-850">
-      <div className="flex items-center justify-between px-4 h-11 border-b border-base-700">
-        <span className="text-sm font-semibold text-gray-200">Changed Files</span>
-        <span className="text-xs text-gray-500 tabular-nums">{files.length}</span>
+    <aside className="w-60 shrink-0 flex flex-col rounded-xl bg-surface1">
+      <div className="flex items-center justify-between px-4 h-[46px] shrink-0">
+        <span className="text-[12.5px] font-semibold text-fg1">Changed Files</span>
+        <span className="font-mono text-[11px] font-semibold text-fg3 bg-bg rounded-full px-2 py-0.5 tabular-nums">
+          {files.length}
+        </span>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto p-2">
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 pb-3">
         {files.length === 0 && (
-          <div className="px-2 py-6 text-center text-xs text-gray-600">
+          <div className="px-2 py-8 text-center text-xs leading-relaxed text-fg3">
             No changes yet. Files Bonsai edits in your project will appear here.
           </div>
         )}
 
         <AnimatePresence initial={false}>
           {files.map((f) => {
-            const meta = KIND_ICON[f.kind]
+            const meta = KIND_META[f.kind]
+            const Icon = meta.icon
             return (
               <motion.div
                 key={f.path}
@@ -51,15 +55,15 @@ export default function ChangedFiles({ files }: Props): JSX.Element {
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="mb-1"
+                className="mb-0.5"
               >
                 <button
                   onClick={() => toggle(f.path)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left hover:bg-base-750 transition"
+                  className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left transition hover:bg-bg"
                   title={f.path}
                 >
-                  <span className={`text-sm ${meta.cls}`}>{meta.icon}</span>
-                  <span className="text-xs text-gray-300 font-mono truncate">{f.path}</span>
+                  <Icon size={13} strokeWidth={1.75} className={`shrink-0 ${meta.cls}`} />
+                  <span className="text-xs text-fg2 font-mono truncate">{f.path}</span>
                 </button>
                 <AnimatePresence>
                   {open === f.path && (
@@ -67,7 +71,7 @@ export default function ChangedFiles({ files }: Props): JSX.Element {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="text-selectable mx-2 mt-1 max-h-64 overflow-auto rounded-md bg-base-900 p-2 text-[11px] leading-relaxed font-mono text-gray-400 whitespace-pre"
+                      className="text-selectable mx-1 mt-1 max-h-64 overflow-auto rounded-lg bg-bg p-2.5 text-[11px] leading-relaxed font-mono text-fg2 whitespace-pre"
                     >
                       {diff}
                     </motion.pre>

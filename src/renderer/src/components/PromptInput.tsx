@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { ArrowUp, Square } from 'lucide-react'
 import type { SessionHook } from '../hooks/useSession'
 
 interface Props {
@@ -69,7 +70,7 @@ export default function PromptInput({ session }: Props): JSX.Element {
   }
 
   return (
-    <div className="px-4 pb-4 pt-2">
+    <div className="px-6 pb-6 pt-2">
       <motion.div
         onDragOver={(e) => {
           e.preventDefault()
@@ -77,8 +78,10 @@ export default function PromptInput({ session }: Props): JSX.Element {
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
-        animate={{ borderColor: dragOver ? '#4ade80' : '#272c3d' }}
-        className="rounded-xl border bg-base-800 shadow-lg"
+        animate={{
+          boxShadow: dragOver ? '0 0 0 1.5px var(--c-accent)' : '0 0 0 0 transparent'
+        }}
+        className="mx-auto w-full max-w-[600px] flex items-center gap-2 rounded-[26px] bg-surface1 py-2 pl-[18px] pr-2 transition"
       >
         <textarea
           ref={taRef}
@@ -87,38 +90,32 @@ export default function PromptInput({ session }: Props): JSX.Element {
           onKeyDown={onKeyDown}
           rows={1}
           placeholder={
-            ready
-              ? 'Message Bonsai…  (Ctrl/⌘+Enter to send · Esc to stop · Ctrl/⌘+L to clear)'
-              : 'Waiting for Bonsai to be ready…'
+            dragOver
+              ? 'Drop files to attach their paths'
+              : ready
+                ? 'Ask Bonsai to build something…'
+                : 'Waiting for Bonsai to be ready…'
           }
-          className="text-selectable w-full resize-none bg-transparent px-4 py-3 text-sm text-gray-100 placeholder:text-gray-600 focus:outline-none"
+          className="text-selectable w-full resize-none bg-transparent text-sm text-fg1 placeholder:text-fg3 focus:outline-none"
         />
-        <div className="flex items-center justify-between px-3 pb-2.5">
-          <div className="flex items-center gap-2 text-[11px] text-gray-600">
-            {dragOver ? (
-              <span className="text-accent">Drop files to attach their paths</span>
-            ) : (
-              <span>Drag files here to reference them</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => session.actions.stop()}
-              className="px-3 py-1.5 rounded-lg text-xs text-gray-400 border border-base-600 hover:bg-base-750 hover:text-gray-200 transition"
-              title="Stop generation (Esc)"
-            >
-              ◼ Stop
-            </button>
-            <button
-              onClick={send}
-              disabled={!ready || !value.trim()}
-              className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-accent text-base-900 hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition"
-              title="Send (Ctrl/⌘+Enter)"
-            >
-              Send ▶
-            </button>
-          </div>
-        </div>
+        {session.streaming ? (
+          <button
+            onClick={() => session.actions.stop()}
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent text-white transition hover:bg-accent-soft"
+            title="Stop generation (Esc)"
+          >
+            <Square size={12} strokeWidth={2} fill="currentColor" />
+          </button>
+        ) : (
+          <button
+            onClick={send}
+            disabled={!ready || !value.trim()}
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent text-white transition hover:bg-accent-soft disabled:cursor-not-allowed disabled:bg-surface3 disabled:text-fg3"
+            title="Send (Ctrl/⌘+Enter)"
+          >
+            <ArrowUp size={16} strokeWidth={2.25} />
+          </button>
+        )}
       </motion.div>
     </div>
   )

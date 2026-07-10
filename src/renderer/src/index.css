@@ -4,8 +4,49 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root,
+:root[data-theme='dark'] {
   color-scheme: dark;
+  --c-page-bg: #020203;
+  --c-bg: #07080a;
+  --c-surface1: #0e0f13;
+  --c-surface2: #151720;
+  --c-surface3: #1b1e28;
+  --c-surface4: #242833;
+  --c-line: #1b1e24;
+  --c-line-strong: #282d36;
+  --c-line-faint: #121319;
+  --c-fg1: #ecedf0;
+  --c-fg2: #a4a9b3;
+  --c-fg3: #5a606b;
+  --c-accent: #ff5a1f;
+  --c-accent-soft: #ff6e3a;
+  --c-accent-bg: rgba(255, 90, 31, 0.14);
+  --c-success: #29d398;
+  --c-warning: #ffb020;
+  --c-danger: #ff3d55;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --c-page-bg: #e7e7ea;
+  --c-bg: #fbfbfc;
+  --c-surface1: #ffffff;
+  --c-surface2: #f1f1f4;
+  --c-surface3: #e7e7eb;
+  --c-surface4: #dbdbe1;
+  --c-line: #e4e4e9;
+  --c-line-strong: #d2d2d9;
+  --c-line-faint: #eeeef1;
+  --c-fg1: #15171c;
+  --c-fg2: #585d68;
+  --c-fg3: #8b909a;
+  --c-accent: #e85a1f;
+  --c-accent-soft: #ff6e3a;
+  --c-accent-bg: #fde8dc;
+  --c-success: #1e9e6f;
+  --c-warning: #b87206;
+  --c-danger: #d8324b;
 }
 
 html,
@@ -16,11 +57,17 @@ body,
 }
 
 body {
-  background: #0a0b0f;
-  color: #e5e7eb;
+  background: var(--c-page-bg);
+  color: var(--c-fg1);
   font-family: Inter, system-ui, sans-serif;
   overflow: hidden;
   user-select: none;
+  transition: background 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+::selection {
+  background: var(--c-accent);
+  color: #000;
 }
 
 /* Scrollbars */
@@ -29,11 +76,11 @@ body {
   height: 9px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #272c3d;
+  background: var(--c-surface4);
   border-radius: 6px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: #343b52;
+  background: var(--c-line-strong);
 }
 *::-webkit-scrollbar-track {
   background: transparent;
@@ -45,4 +92,20 @@ body {
 
 .text-selectable {
   user-select: text;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 1;
+  }
+  70% {
+    box-shadow: 0 0 0 6px transparent;
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
 }

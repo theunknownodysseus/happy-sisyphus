@@ -2,12 +2,19 @@ import { useEffect, useRef } from 'react'
 import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
+import type { Theme } from '../hooks/useTheme'
+import { xtermTheme } from '../xterm-theme'
+
+interface Props {
+  theme: Theme
+}
 
 // An interactive shell terminal for the mini-editor. Mirrors TerminalPanel's
 // xterm setup but is wired to the standalone shell PTY (window.bonsai.term*)
 // rather than the Bonsai session, so the user can run arbitrary commands.
-export default function EditorTerminal(): JSX.Element {
+export default function EditorTerminal({ theme }: Props): JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null)
+  const termRef = useRef<Terminal | null>(null)
 
   useEffect(() => {
     if (!hostRef.current) return
@@ -18,17 +25,13 @@ export default function EditorTerminal(): JSX.Element {
       lineHeight: 1.2,
       cursorBlink: true,
       allowProposedApi: true,
-      theme: {
-        background: '#0e1015',
-        foreground: '#d6dae4',
-        cursor: '#4ade80',
-        selectionBackground: '#2f3550'
-      }
+      theme: xtermTheme(theme)
     })
     const fit = new FitAddon()
     term.loadAddon(fit)
     term.loadAddon(new WebLinksAddon())
     term.open(hostRef.current)
+    termRef.current = term
 
     const doFit = (): void => {
       try {
@@ -57,11 +60,17 @@ export default function EditorTerminal(): JSX.Element {
       ro.disconnect()
       window.removeEventListener('resize', doFit)
       term.dispose()
+      termRef.current = null
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (termRef.current) termRef.current.options.theme = xtermTheme(theme)
+  }, [theme])
+
   return (
-    <div className="relative h-full border-t border-base-700 bg-base-850 overflow-hidden">
+    <div className="relative h-full rounded-xl bg-surface2 overflow-hidden">
       <div ref={hostRef} className="terminal-host absolute inset-0" />
     </div>
   )

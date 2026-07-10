@@ -1,11 +1,14 @@
 import Editor, { type OnMount } from '@monaco-editor/react'
+import { Download } from 'lucide-react'
 import { useRef } from 'react'
+import type { Theme } from '../hooks/useTheme'
 
 interface Props {
   path: string | null
   value: string
   readonly: boolean
   dirty: boolean
+  theme: Theme
   onChange: (value: string) => void
   onSave: () => void
 }
@@ -48,6 +51,7 @@ export default function CodeEditor({
   value,
   readonly,
   dirty,
+  theme,
   onChange,
   onSave
 }: Props): JSX.Element {
@@ -61,26 +65,27 @@ export default function CodeEditor({
   }
 
   return (
-    <div className="flex flex-1 min-h-0 flex-col bg-base-850">
-      <div className="flex items-center justify-between h-9 px-3 border-b border-base-700 bg-base-900/60">
-        <span className="text-xs font-mono text-gray-400 truncate">
+    <div className="flex flex-1 min-h-0 flex-col">
+      <div className="flex items-center justify-between h-9 px-3">
+        <span className="text-xs font-mono text-fg2 truncate">
           {path ?? 'No file open'}
           {dirty && <span className="ml-2 text-accent">● unsaved</span>}
         </span>
         <button
           onClick={onSave}
           disabled={!path || readonly || !dirty}
-          className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-accent text-base-900 hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition"
+          className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-accent text-white hover:bg-accent-soft disabled:opacity-30 disabled:cursor-not-allowed transition"
           title="Save (Ctrl/⌘+S)"
         >
-          ⭳ Save
+          <Download size={11} strokeWidth={2} />
+          Save
         </button>
       </div>
       <div className="flex-1 min-h-0">
         {path ? (
           <Editor
             height="100%"
-            theme="vs-dark"
+            theme={theme === 'light' ? 'vs' : 'vs-dark'}
             path={path}
             language={langFor(path)}
             value={value}
@@ -97,7 +102,7 @@ export default function CodeEditor({
             }}
           />
         ) : (
-          <div className="grid h-full place-items-center text-sm text-gray-600">
+          <div className="grid h-full place-items-center text-sm text-fg3">
             Select a file from the explorer to open it.
           </div>
         )}

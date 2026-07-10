@@ -1,13 +1,14 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { Check, KeyRound, RefreshCw, Sprout, WifiOff } from 'lucide-react'
 import { useState } from 'react'
 import ChangedFiles from './components/ChangedFiles'
 import EditorView from './components/EditorView'
 import PromptInput from './components/PromptInput'
 import Sidebar from './components/Sidebar'
-import StatusBar from './components/StatusBar'
 import TerminalPanel from './components/TerminalPanel'
 import Toolbar, { type AppView } from './components/Toolbar'
 import { useSession } from './hooks/useSession'
+import { useTheme } from './hooks/useTheme'
 
 // Phases during which we overlay a friendly "setting up" panel over the terminal.
 const SETUP_PHASES = new Set(['checking', 'installing', 'loggingIn', 'starting', 'awaitingConfirm'])
@@ -26,37 +27,33 @@ function SetupOverlay({ phase, label }: { phase: string; label: string }): JSX.E
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-10 grid place-items-center bg-base-850/85 backdrop-blur-sm"
+      className="absolute inset-0 z-10 grid place-items-center bg-surface1/85 backdrop-blur-sm"
     >
-      <div className="w-[380px] rounded-2xl border border-base-700 bg-base-800 p-6 shadow-2xl">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="grid place-items-center h-10 w-10 rounded-xl bg-accent/15 text-accent text-xl">
-            🌱
+      <div className="w-[380px] rounded-2xl bg-surface1 p-6 shadow-2xl">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="grid place-items-center h-9 w-9 rounded-[10px] bg-accent-bg text-accent shrink-0">
+            <Sprout size={18} strokeWidth={1.75} />
           </div>
           <div>
-            <div className="text-base font-semibold text-gray-100">Setting up Bonsai</div>
-            <div className="text-xs text-gray-500">{label}</div>
+            <div className="text-[14.5px] font-bold text-fg1 tracking-tight">Setting up Bonsai</div>
+            <div className="text-xs text-fg3">{label}</div>
           </div>
         </div>
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-0.5">
           {steps.map((s) => {
             const idx = order.indexOf(s.key)
             const done = current > idx
             const active = phase === s.key
             return (
-              <div key={s.key} className="flex items-center gap-2.5 text-sm">
-                <span
-                  className={`grid place-items-center h-5 w-5 rounded-full text-[11px] ${
-                    done
-                      ? 'bg-accent text-base-900'
-                      : active
-                        ? 'bg-accent/20 text-accent animate-pulseGlow'
-                        : 'bg-base-700 text-gray-500'
-                  }`}
-                >
-                  {done ? '✓' : active ? '•' : ''}
-                </span>
-                <span className={done ? 'text-gray-400' : active ? 'text-gray-100' : 'text-gray-600'}>
+              <div key={s.key} className="flex items-center gap-2.5 py-1.5">
+                {active ? (
+                  <span className="h-3.5 w-3.5 shrink-0 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+                ) : done ? (
+                  <Check size={14} strokeWidth={2} className="shrink-0 text-success" />
+                ) : (
+                  <span className="h-3.5 w-3.5 shrink-0 rounded-full border-2 border-fg3/40" />
+                )}
+                <span className={`text-[13px] ${active ? 'font-semibold text-fg1' : done ? 'text-fg3' : 'text-fg3'}`}>
                   {s.text}
                 </span>
               </div>
@@ -64,7 +61,7 @@ function SetupOverlay({ phase, label }: { phase: string; label: string }): JSX.E
           })}
         </div>
         {phase === 'loggingIn' && (
-          <p className="mt-4 text-xs text-gray-500 leading-relaxed">
+          <p className="mt-4 text-xs text-fg3 leading-relaxed">
             A browser window has opened for authentication. Complete the login there and this will
             continue automatically.
           </p>
@@ -92,26 +89,27 @@ function LoginCodeOverlay({ code }: { code: string }): JSX.Element {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-20 grid place-items-center bg-base-950/95 px-4 py-6"
+      className="absolute inset-0 z-20 grid place-items-center bg-bg/95 px-4 py-6"
     >
-      <div className="w-full max-w-3xl rounded-3xl border border-base-700 bg-base-800 p-8 shadow-2xl text-center">
-        <div className="text-3xl mb-4">🔐 Paste this code in the browser</div>
-        <p className="text-sm text-gray-400 mb-6">
+      <div className="w-full max-w-lg rounded-2xl bg-surface1 p-8 shadow-2xl text-center">
+        <div className="mx-auto mb-4 grid h-11 w-11 place-items-center rounded-xl bg-accent-bg text-accent">
+          <KeyRound size={20} strokeWidth={1.75} />
+        </div>
+        <div className="text-base font-bold text-fg1 mb-1">Paste this code in the browser</div>
+        <p className="text-[13px] text-fg3 mb-6 leading-relaxed">
           If the login page did not open automatically, open the browser URL and paste this code to continue.
         </p>
-        <div className="mx-auto mb-6 rounded-3xl border border-accent/30 bg-base-900 px-8 py-6 text-4xl font-semibold tracking-[0.3em] text-white">
+        <div className="mx-auto mb-6 rounded-2xl bg-bg px-8 py-6 text-4xl font-bold tracking-[0.25em] text-fg1 font-mono">
           {code}
         </div>
         <button
           type="button"
           onClick={onCopy}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-base-900 transition hover:bg-accent-soft"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-soft"
         >
-          {copied ? 'Copied!' : 'Copy code'}
+          {copied ? 'Copied' : 'Copy code'}
         </button>
-        <p className="mt-4 text-xs text-gray-500">
-          This code expires in a few minutes.
-        </p>
+        <p className="mt-4 text-xs text-fg3">This code expires in a few minutes.</p>
       </div>
     </motion.div>
   )
@@ -123,17 +121,20 @@ function ErrorOverlay({ label, onRetry }: { label: string; onRetry: () => void }
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-10 grid place-items-center bg-base-850/85 backdrop-blur-sm"
+      className="absolute inset-0 z-10 grid place-items-center bg-surface1/85 backdrop-blur-sm"
     >
-      <div className="w-[380px] rounded-2xl border border-red-500/30 bg-base-800 p-6 text-center shadow-2xl">
-        <div className="text-3xl mb-2">🔴</div>
-        <div className="text-base font-semibold text-gray-100 mb-1">Bonsai isn’t running</div>
-        <div className="text-xs text-gray-500 mb-4">{label}</div>
+      <div className="w-[380px] rounded-2xl bg-surface1 p-6 text-center shadow-2xl">
+        <div className="mx-auto mb-3 grid h-11 w-11 place-items-center rounded-xl bg-danger/10 text-danger">
+          <WifiOff size={20} strokeWidth={1.75} />
+        </div>
+        <div className="text-[14.5px] font-bold text-fg1 mb-1">Bonsai isn&rsquo;t running</div>
+        <div className="text-xs text-fg3 mb-5">{label}</div>
         <button
           onClick={onRetry}
-          className="px-4 py-2 rounded-lg text-sm font-semibold bg-accent text-base-900 hover:bg-accent-soft transition"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-accent text-white hover:bg-accent-soft transition"
         >
-          ⟳ Restart Bonsai
+          <RefreshCw size={14} strokeWidth={2} />
+          Restart Bonsai
         </button>
       </div>
     </motion.div>
@@ -143,22 +144,29 @@ function ErrorOverlay({ label, onRetry }: { label: string; onRetry: () => void }
 export default function App(): JSX.Element {
   const session = useSession()
   const { state } = session
+  const { theme, toggleTheme } = useTheme()
   const [view, setView] = useState<AppView>('chat')
   const showSetup = view === 'chat' && SETUP_PHASES.has(state.phase)
   const showError = view === 'chat' && (state.phase === 'offline' || state.phase === 'error')
 
   return (
-    <div className="flex flex-col h-screen">
-      <StatusBar state={state} streaming={session.streaming} />
-      <div className="flex flex-1 min-h-0">
+    <div className="flex flex-col h-screen bg-bg">
+      <div className="flex flex-1 min-h-0 gap-2.5 p-2.5">
         <Sidebar
           state={state}
           filesChanged={session.files.length}
           history={session.state.promptCount}
         />
 
-        <main className="flex flex-1 min-w-0 flex-col">
-          <Toolbar session={session} view={view} onViewChange={setView} />
+        <main className="flex flex-1 min-w-0 flex-col rounded-xl bg-surface1 overflow-hidden">
+          <Toolbar
+            session={session}
+            view={view}
+            onViewChange={setView}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            streaming={session.streaming}
+          />
           {view === 'chat' ? (
             <>
               <div className="relative flex flex-1 min-h-0 flex-col px-4 pt-3">
@@ -175,12 +183,12 @@ export default function App(): JSX.Element {
                     />
                   )}
                 </AnimatePresence>
-                <TerminalPanel session={session} />
+                <TerminalPanel session={session} theme={theme} />
               </div>
               <PromptInput session={session} />
             </>
           ) : (
-            <EditorView key={state.cwd} state={state} />
+            <EditorView key={state.cwd} state={state} theme={theme} />
           )}
         </main>
 

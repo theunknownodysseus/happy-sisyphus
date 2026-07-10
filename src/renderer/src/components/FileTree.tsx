@@ -1,3 +1,4 @@
+import { ChevronDown, ChevronRight, File, Folder, FolderOpen } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { DirEntry } from '../../../shared/types'
 
@@ -13,11 +14,11 @@ interface Props {
 // fetches its children on first expand via window.bonsai.listDir.
 export default function FileTree({ activePath, onOpenFile }: Props): JSX.Element {
   return (
-    <div className="w-64 shrink-0 flex flex-col border-r border-base-700 bg-base-850">
-      <div className="flex items-center h-11 px-4 border-b border-base-700">
-        <span className="text-sm font-semibold text-gray-200">Explorer</span>
+    <div className="w-60 shrink-0 flex flex-col rounded-xl bg-surface1">
+      <div className="flex items-center h-[46px] px-4">
+        <span className="text-[12.5px] font-semibold text-fg1">Explorer</span>
       </div>
-      <div className="flex-1 min-h-0 overflow-auto py-1">
+      <div className="flex-1 min-h-0 overflow-auto px-2 pb-2">
         <DirNode dir="" depth={0} activePath={activePath} onOpenFile={onOpenFile} defaultOpen />
       </div>
     </div>
@@ -55,9 +56,9 @@ function DirNode({
     <>
       {open &&
         (entries === null ? (
-          <Row depth={depth} icon="…" label="loading" muted />
+          <Row depth={depth} label="loading" muted />
         ) : entries.length === 0 ? (
-          <Row depth={depth} icon="" label="empty" muted />
+          <Row depth={depth} label="empty" muted />
         ) : (
           entries.map((e) =>
             e.isDir ? (
@@ -72,7 +73,7 @@ function DirNode({
               <Row
                 key={e.path}
                 depth={depth}
-                icon="📄"
+                icon={<File size={13} strokeWidth={1.75} />}
                 label={e.name}
                 active={activePath === e.path}
                 onClick={() => onOpenFile(e.path)}
@@ -100,9 +101,13 @@ function ExpandableDir({
     <>
       <Row
         depth={depth}
-        icon={open ? '📂' : '📁'}
+        icon={
+          open ? <FolderOpen size={13} strokeWidth={1.75} /> : <Folder size={13} strokeWidth={1.75} />
+        }
         label={entry.name}
-        caret={open ? '▾' : '▸'}
+        caret={
+          open ? <ChevronDown size={11} strokeWidth={2} /> : <ChevronRight size={11} strokeWidth={2} />
+        }
         onClick={() => setOpen((o) => !o)}
       />
       {open && (
@@ -128,9 +133,9 @@ function Row({
   onClick
 }: {
   depth: number
-  icon: string
+  icon?: React.ReactNode
   label: string
-  caret?: string
+  caret?: React.ReactNode
   active?: boolean
   muted?: boolean
   onClick?: () => void
@@ -139,12 +144,12 @@ function Row({
     <button
       onClick={onClick}
       title={label}
-      className={`w-full flex items-center gap-1 py-1 pr-2 text-left text-xs font-mono truncate transition
-        ${active ? 'bg-accent/15 text-accent' : muted ? 'text-gray-600' : 'text-gray-300 hover:bg-base-750'}`}
+      className={`w-full flex items-center gap-1.5 py-[5px] pr-2 rounded-md text-left text-xs font-mono truncate transition
+        ${active ? 'bg-accent-bg text-accent' : muted ? 'text-fg3' : 'text-fg2 hover:bg-surface2'}`}
       style={{ paddingLeft: 8 + depth * 12 }}
     >
-      <span className="w-3 text-gray-500">{caret ?? ''}</span>
-      <span>{icon}</span>
+      <span className="w-2.5 shrink-0 text-fg3">{caret ?? ''}</span>
+      <span className="shrink-0 text-fg3">{icon}</span>
       <span className="truncate">{label}</span>
     </button>
   )
