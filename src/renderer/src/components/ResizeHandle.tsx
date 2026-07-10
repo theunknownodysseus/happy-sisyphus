@@ -1,5 +1,5 @@
 interface Props {
-  onPointerDown: (e: React.PointerEvent) => void
+  onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void
 }
 
 // Slim drag handle for resizing an adjacent panel. The hit area is wider than
