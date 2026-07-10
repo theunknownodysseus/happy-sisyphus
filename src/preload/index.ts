@@ -38,6 +38,7 @@ const api: BonsaiApi = {
   exportMarkdown: () => ipcRenderer.invoke(CMD.exportMarkdown) as Promise<string | null>,
   fileDiff: (path) => ipcRenderer.invoke(CMD.fileDiff, path) as Promise<string>,
   listDir: (path) => ipcRenderer.invoke(CMD.listDir, path) as Promise<DirEntry[]>,
+  listAllFiles: () => ipcRenderer.invoke(CMD.listAllFiles) as Promise<string[]>,
   readFile: (path) => ipcRenderer.invoke(CMD.readFile, path) as Promise<FileContent>,
   writeFile: (path, content) => ipcRenderer.invoke(CMD.writeFile, path, content) as Promise<boolean>,
   termStart: () => ipcRenderer.invoke(CMD.termStart) as Promise<void>,

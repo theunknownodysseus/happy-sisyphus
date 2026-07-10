@@ -106,6 +106,7 @@ export const CMD = {
   fileDiff: 'action:fileDiff',
   // Mini-editor: filesystem access.
   listDir: 'fs:listDir',
+  listAllFiles: 'fs:listAllFiles',
   readFile: 'fs:readFile',
   writeFile: 'fs:writeFile',
   // Mini-editor: embedded shell terminal.
@@ -133,6 +134,8 @@ export interface BonsaiApi {
   fileDiff(path: string): Promise<string>
   // Mini-editor: filesystem.
   listDir(path: string): Promise<DirEntry[]>
+  /** Flat list of every file's project-relative path, for the fuzzy finder. */
+  listAllFiles(): Promise<string[]>
   readFile(path: string): Promise<FileContent>
   writeFile(path: string, content: string): Promise<boolean>
   // Mini-editor: embedded shell terminal.

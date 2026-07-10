@@ -32,7 +32,7 @@ group. Check items off as they land.
 
 - [x] **File tabs** — support multiple open files with a tab strip above
       CodeEditor, not just a single `path` in state.
-- [ ] **Fuzzy file finder (Ctrl/⌘+P)** — jump to any file without walking
+- [x] **Fuzzy file finder (Ctrl/⌘+P)** — jump to any file without walking
       the tree.
 - [ ] **Git status coloring in FileTree** — modified/untracked/staged files
       colored like VS Code's explorer (uses `git status --porcelain`, already

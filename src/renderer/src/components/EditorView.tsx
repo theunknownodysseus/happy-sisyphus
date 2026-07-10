@@ -1,7 +1,9 @@
-import { useCallback, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import { useCallback, useEffect, useState } from 'react'
 import CodeEditor from './CodeEditor'
 import EditorTabs from './EditorTabs'
 import EditorTerminal from './EditorTerminal'
+import FileFinder from './FileFinder'
 import FileTree from './FileTree'
 import type { SessionState } from '../../../shared/types'
 import type { Theme } from '../hooks/useTheme'
@@ -25,6 +27,7 @@ interface OpenFile {
 export default function EditorView({ state, theme }: Props): JSX.Element {
   const [files, setFiles] = useState<OpenFile[]>([])
   const [activePath, setActivePath] = useState<string | null>(null)
+  const [finderOpen, setFinderOpen] = useState(false)
 
   const active = files.find((f) => f.path === activePath) ?? null
   const canSave = active ? !active.readonly && active.value !== active.savedValue : false
@@ -76,8 +79,19 @@ export default function EditorView({ state, theme }: Props): JSX.Element {
     }
   }, [active])
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+        e.preventDefault()
+        setFinderOpen(true)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   return (
-    <div className="flex flex-1 min-h-0 gap-2.5 p-2.5">
+    <div className="relative flex flex-1 min-h-0 gap-2.5 p-2.5">
       <FileTree root={state.cwd} activePath={activePath} onOpenFile={openFile} />
       <div className="flex flex-1 min-w-0 flex-col gap-2.5">
         <div className="flex-1 min-h-0 flex flex-col rounded-xl bg-surface2 overflow-hidden">
@@ -102,6 +116,18 @@ export default function EditorView({ state, theme }: Props): JSX.Element {
           <EditorTerminal theme={theme} />
         </div>
       </div>
+
+      <AnimatePresence>
+        {finderOpen && (
+          <FileFinder
+            onSelect={(path) => {
+              openFile(path)
+              setFinderOpen(false)
+            }}
+            onClose={() => setFinderOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

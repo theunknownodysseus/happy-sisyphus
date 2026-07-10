@@ -255,6 +255,38 @@ ipcMain.handle(CMD.fileDiff, (_e, path: string): Promise<string> => {
 
 // --- IPC: mini-editor filesystem -------------------------------------------
 
+/** Cap on the fuzzy finder's file list so a huge repo can't hang the walk. */
+const MAX_FINDER_FILES = 8000
+
+function walkFiles(root: string, dir: string, out: string[]): void {
+  if (out.length >= MAX_FINDER_FILES) return
+  let entries: import('node:fs').Dirent[]
+  try {
+    entries = readdirSync(dir, { withFileTypes: true })
+  } catch {
+    return
+  }
+  for (const d of entries) {
+    if (out.length >= MAX_FINDER_FILES) return
+    if (d.name.startsWith('.')) continue
+    const abs = join(dir, d.name)
+    if (d.isDirectory()) {
+      if (FS_IGNORE.has(d.name)) continue
+      walkFiles(root, abs, out)
+    } else {
+      out.push(relative(root, abs).split(sep).join('/'))
+    }
+  }
+}
+
+ipcMain.handle(CMD.listAllFiles, (): string[] => {
+  const root = session.state.cwd
+  if (!root) return []
+  const out: string[] = []
+  walkFiles(root, root, out)
+  return out
+})
+
 ipcMain.handle(CMD.listDir, (_e, rel: string): DirEntry[] => {
   const abs = safeResolve(rel)
   if (!abs) return []
