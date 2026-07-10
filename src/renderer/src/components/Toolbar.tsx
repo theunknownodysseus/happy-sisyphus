@@ -4,6 +4,8 @@ import {
   FileCode2,
   MessageSquare,
   Moon,
+  PanelRightClose,
+  PanelRightOpen,
   RefreshCw,
   SquarePlus,
   Sun,
@@ -24,6 +26,8 @@ interface Props {
   theme: Theme
   onToggleTheme: () => void
   streaming: boolean
+  filesCollapsed: boolean
+  onToggleFiles: () => void
 }
 
 function IconBtn({
@@ -79,7 +83,9 @@ export default function Toolbar({
   onViewChange,
   theme,
   onToggleTheme,
-  streaming
+  streaming,
+  filesCollapsed,
+  onToggleFiles
 }: Props): JSX.Element {
   const [toast, setToast] = useState<string | null>(null)
 
@@ -147,6 +153,17 @@ export default function Toolbar({
         </IconBtn>
         <IconBtn onClick={clearChat} title="Clear conversation history" danger>
           <Trash2 size={14} strokeWidth={1.75} />
+        </IconBtn>
+        <span className="mx-1 h-5 w-px bg-line" />
+        <IconBtn
+          onClick={onToggleFiles}
+          title={filesCollapsed ? 'Show Changed Files' : 'Hide Changed Files'}
+        >
+          {filesCollapsed ? (
+            <PanelRightOpen size={14} strokeWidth={1.75} />
+          ) : (
+            <PanelRightClose size={14} strokeWidth={1.75} />
+          )}
         </IconBtn>
         <span className="mx-1 h-5 w-px bg-line" />
         <IconBtn

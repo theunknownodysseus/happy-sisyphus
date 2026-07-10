@@ -8,6 +8,7 @@ import PromptInput from './components/PromptInput'
 import ResizeHandle from './components/ResizeHandle'
 import TerminalPanel from './components/TerminalPanel'
 import Toolbar, { type AppView } from './components/Toolbar'
+import { useCollapsible } from './hooks/useCollapsible'
 import { useResizablePanel } from './hooks/useResizablePanel'
 import { useSession } from './hooks/useSession'
 import { useTheme } from './hooks/useTheme'
@@ -152,6 +153,7 @@ export default function App(): JSX.Element {
   const showError = view === 'chat' && (state.phase === 'offline' || state.phase === 'error')
 
   const rightPanel = useResizablePanel({ key: 'bonsai:rightPanelWidth', defaultWidth: 240, min: 180, max: 420, edge: 'left' })
+  const filesPanel = useCollapsible('bonsai:filesCollapsed')
 
   return (
     <div className="flex flex-col h-screen gap-2.5 bg-bg p-2.5">
@@ -164,6 +166,8 @@ export default function App(): JSX.Element {
             theme={theme}
             onToggleTheme={toggleTheme}
             streaming={session.streaming}
+            filesCollapsed={filesPanel.collapsed}
+            onToggleFiles={filesPanel.toggle}
           />
           {view === 'chat' ? (
             <>
@@ -190,8 +194,12 @@ export default function App(): JSX.Element {
           )}
         </main>
 
-        <ResizeHandle onPointerDown={rightPanel.onHandlePointerDown} />
-        <ChangedFiles width={rightPanel.width} files={session.files} />
+        {!filesPanel.collapsed && (
+          <>
+            <ResizeHandle onPointerDown={rightPanel.onHandlePointerDown} />
+            <ChangedFiles width={rightPanel.width} files={session.files} />
+          </>
+        )}
       </div>
 
       <Footer state={state} filesChanged={session.files.length} history={session.state.promptCount} />
