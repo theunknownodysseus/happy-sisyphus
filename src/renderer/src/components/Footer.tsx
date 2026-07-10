@@ -1,5 +1,6 @@
-import { Sprout } from 'lucide-react'
+import { GitBranch, Sprout } from 'lucide-react'
 import type { SessionState } from '../../../shared/types'
+import { useGitStatus } from '../hooks/useGitStatus'
 
 interface Props {
   state: SessionState
@@ -18,6 +19,8 @@ function Sep(): JSX.Element {
 }
 
 export default function Footer({ state, filesChanged, history }: Props): JSX.Element {
+  const git = useGitStatus(state.cwd)
+  const gitChanges = Object.keys(git.files).length
   return (
     <div className="flex items-center gap-3 h-10 px-3.5 rounded-xl bg-surface1 shrink-0">
       <div className="flex items-center gap-1.5 shrink-0">
@@ -46,6 +49,21 @@ export default function Footer({ state, filesChanged, history }: Props): JSX.Ele
       )}
 
       <div className="flex items-center gap-3 shrink-0">
+        {git.branch && (
+          <>
+            <span
+              className="flex items-center gap-1.5 text-xs text-fg2"
+              title={gitChanges ? `${gitChanges} uncommitted change${gitChanges === 1 ? '' : 's'}` : 'Working tree clean'}
+            >
+              <GitBranch size={12} strokeWidth={1.75} className="text-fg3" />
+              <span className="font-mono">{git.branch}</span>
+              {gitChanges > 0 && (
+                <span className="font-mono font-semibold text-warning">{gitChanges}</span>
+              )}
+            </span>
+            <Sep />
+          </>
+        )}
         <span className="flex items-center gap-1.5 text-xs text-fg1">
           <span className={`h-[6px] w-[6px] rounded-full animate-pulse-dot ${STATUS_DOT[state.light]}`} />
           {state.label}

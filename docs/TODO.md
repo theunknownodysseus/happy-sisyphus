@@ -34,10 +34,12 @@ group. Check items off as they land.
       CodeEditor, not just a single `path` in state.
 - [x] **Fuzzy file finder (Ctrl/⌘+P)** — jump to any file without walking
       the tree.
-- [ ] **Git status coloring in FileTree** — modified/untracked/staged files
+- [x] **Git status coloring in FileTree** — modified/untracked/staged files
       colored like VS Code's explorer (uses `git status --porcelain`, already
-      have `fileDiff` IPC as a model for a `gitStatus` IPC call).
-- [ ] **Font size / minimap toggle** for CodeEditor.
+      have `fileDiff` IPC as a model for a `gitStatus` IPC call). Footer also
+      shows the current branch + uncommitted change count.
+- [x] **Font size / minimap toggle** for CodeEditor — controls live in the
+      tab strip, persisted to `localStorage`.
 
 ## Changed Files / diff review
 

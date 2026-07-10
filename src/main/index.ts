@@ -26,6 +26,8 @@ import {
   type ChangedFile,
   type DirEntry,
   type FileContent,
+  type GitFileState,
+  type GitStatus,
   type HistoryEntry,
   type SessionState
 } from '../shared/types'
@@ -248,6 +250,43 @@ ipcMain.handle(CMD.fileDiff, (_e, path: string): Promise<string> => {
       (err, stdout) => {
         if (err && !stdout) return resolve('')
         resolve(stdout || '')
+      }
+    )
+  })
+})
+
+ipcMain.handle(CMD.gitStatus, (): Promise<GitStatus> => {
+  const empty: GitStatus = { branch: '', files: {} }
+  const cwd = session.state.cwd
+  if (!cwd) return Promise.resolve(empty)
+  return new Promise((resolve) => {
+    execFile(
+      'git',
+      ['status', '--porcelain=v1', '-b'],
+      { cwd, shell: true, maxBuffer: 5 * 1024 * 1024 },
+      (err, stdout) => {
+        if (err || !stdout) return resolve(empty)
+        const result: GitStatus = { branch: '', files: {} }
+        for (const line of stdout.split('\n')) {
+          if (!line) continue
+          if (line.startsWith('## ')) {
+            // "## main...origin/main [ahead 1]" -> "main"
+            result.branch = line.slice(3).split('...')[0].trim()
+            continue
+          }
+          const x = line[0] // index (staged) state
+          const y = line[1] // worktree state
+          // Renames are listed as "old -> new"; color the new path.
+          const raw = line.slice(3)
+          const path = (raw.includes(' -> ') ? raw.split(' -> ')[1] : raw).replace(/^"|"$/g, '')
+          let state: GitFileState
+          if (x === '?' || y === '?') state = 'untracked'
+          else if (x === 'D' || y === 'D') state = 'deleted'
+          else if (y !== ' ') state = 'modified'
+          else state = 'staged'
+          result.files[path] = state
+        }
+        resolve(result)
       }
     )
   })

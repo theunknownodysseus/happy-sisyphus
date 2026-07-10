@@ -7,6 +7,8 @@ interface Props {
   value: string
   readonly: boolean
   theme: Theme
+  fontSize: number
+  minimap: boolean
   onChange: (value: string) => void
   onSave: () => void
 }
@@ -44,7 +46,16 @@ function langFor(path: string | null): string | undefined {
   return EXT_LANG[ext]
 }
 
-export default function CodeEditor({ path, value, readonly, theme, onChange, onSave }: Props): JSX.Element {
+export default function CodeEditor({
+  path,
+  value,
+  readonly,
+  theme,
+  fontSize,
+  minimap,
+  onChange,
+  onSave
+}: Props): JSX.Element {
   // Keep the latest onSave in a ref so the Monaco command (bound once per
   // mounted model) always calls the current handler without rebinding.
   const saveRef = useRef(onSave)
@@ -74,9 +85,9 @@ export default function CodeEditor({ path, value, readonly, theme, onChange, onS
         onMount={handleMount}
         options={{
           readOnly: readonly,
-          fontSize: 13,
+          fontSize,
           fontFamily: '"JetBrains Mono", "Cascadia Code", Consolas, monospace',
-          minimap: { enabled: true },
+          minimap: { enabled: minimap },
           scrollBeyondLastLine: false,
           automaticLayout: true,
           tabSize: 2

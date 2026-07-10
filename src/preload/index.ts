@@ -11,6 +11,7 @@ import {
   type DataChunk,
   type DirEntry,
   type FileContent,
+  type GitStatus,
   type HistoryEntry,
   type SessionState
 } from '../shared/types'
@@ -37,6 +38,7 @@ const api: BonsaiApi = {
   copyConversation: () => ipcRenderer.invoke(CMD.copyConversation) as Promise<string>,
   exportMarkdown: () => ipcRenderer.invoke(CMD.exportMarkdown) as Promise<string | null>,
   fileDiff: (path) => ipcRenderer.invoke(CMD.fileDiff, path) as Promise<string>,
+  gitStatus: () => ipcRenderer.invoke(CMD.gitStatus) as Promise<GitStatus>,
   listDir: (path) => ipcRenderer.invoke(CMD.listDir, path) as Promise<DirEntry[]>,
   listAllFiles: () => ipcRenderer.invoke(CMD.listAllFiles) as Promise<string[]>,
   readFile: (path) => ipcRenderer.invoke(CMD.readFile, path) as Promise<FileContent>,

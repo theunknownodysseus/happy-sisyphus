@@ -1,4 +1,5 @@
-import { Download, X } from 'lucide-react'
+import { AArrowDown, AArrowUp, Download, Map, X } from 'lucide-react'
+import { MAX_FONT, MIN_FONT, type EditorSettings } from '../hooks/useEditorSettings'
 
 interface Tab {
   path: string
@@ -9,6 +10,7 @@ interface Props {
   tabs: Tab[]
   activePath: string | null
   canSave: boolean
+  settings: EditorSettings
   onSelect: (path: string) => void
   onClose: (path: string) => void
   onSave: () => void
@@ -18,10 +20,38 @@ function basename(path: string): string {
   return path.split('/').pop() ?? path
 }
 
+function SettingBtn({
+  onClick,
+  title,
+  disabled,
+  active,
+  children
+}: {
+  onClick: () => void
+  title: string
+  disabled?: boolean
+  active?: boolean
+  children: React.ReactNode
+}): JSX.Element {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      disabled={disabled}
+      className={`grid h-6 w-6 place-items-center rounded-md transition disabled:cursor-not-allowed disabled:opacity-30 ${
+        active ? 'bg-surface4 text-fg1' : 'text-fg3 hover:bg-surface3 hover:text-fg1'
+      }`}
+    >
+      {children}
+    </button>
+  )
+}
+
 export default function EditorTabs({
   tabs,
   activePath,
   canSave,
+  settings,
   onSelect,
   onClose,
   onSave
@@ -61,15 +91,42 @@ export default function EditorTabs({
       </div>
 
       {tabs.length > 0 && (
-        <button
-          onClick={onSave}
-          disabled={!canSave}
-          title="Save (Ctrl/⌘+S)"
-          className="ml-1 flex shrink-0 items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-accent text-white transition hover:bg-accent-soft disabled:cursor-not-allowed disabled:bg-transparent disabled:text-fg3"
-        >
-          <Download size={11} strokeWidth={2} />
-          Save
-        </button>
+        <div className="ml-1 flex shrink-0 items-center gap-0.5">
+          <SettingBtn
+            onClick={() => settings.bumpFontSize(-1)}
+            disabled={settings.fontSize <= MIN_FONT}
+            title="Decrease font size"
+          >
+            <AArrowDown size={13} strokeWidth={1.75} />
+          </SettingBtn>
+          <span className="w-5 text-center font-mono text-[10px] text-fg3 tabular-nums">
+            {settings.fontSize}
+          </span>
+          <SettingBtn
+            onClick={() => settings.bumpFontSize(1)}
+            disabled={settings.fontSize >= MAX_FONT}
+            title="Increase font size"
+          >
+            <AArrowUp size={13} strokeWidth={1.75} />
+          </SettingBtn>
+          <SettingBtn
+            onClick={settings.toggleMinimap}
+            active={settings.minimap}
+            title={settings.minimap ? 'Hide minimap' : 'Show minimap'}
+          >
+            <Map size={12} strokeWidth={1.75} />
+          </SettingBtn>
+          <span className="mx-1 h-4 w-px bg-line" />
+          <button
+            onClick={onSave}
+            disabled={!canSave}
+            title="Save (Ctrl/⌘+S)"
+            className="flex shrink-0 items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-accent text-white transition hover:bg-accent-soft disabled:cursor-not-allowed disabled:bg-transparent disabled:text-fg3"
+          >
+            <Download size={11} strokeWidth={2} />
+            Save
+          </button>
+        </div>
       )}
     </div>
   )

@@ -6,6 +6,7 @@ import EditorTerminal from './EditorTerminal'
 import FileFinder from './FileFinder'
 import FileTree from './FileTree'
 import type { SessionState } from '../../../shared/types'
+import { useEditorSettings } from '../hooks/useEditorSettings'
 import type { Theme } from '../hooks/useTheme'
 
 interface Props {
@@ -28,6 +29,7 @@ export default function EditorView({ state, theme }: Props): JSX.Element {
   const [files, setFiles] = useState<OpenFile[]>([])
   const [activePath, setActivePath] = useState<string | null>(null)
   const [finderOpen, setFinderOpen] = useState(false)
+  const editorSettings = useEditorSettings()
 
   const active = files.find((f) => f.path === activePath) ?? null
   const canSave = active ? !active.readonly && active.value !== active.savedValue : false
@@ -99,6 +101,7 @@ export default function EditorView({ state, theme }: Props): JSX.Element {
             tabs={files.map((f) => ({ path: f.path, dirty: f.value !== f.savedValue }))}
             activePath={activePath}
             canSave={canSave}
+            settings={editorSettings}
             onSelect={setActivePath}
             onClose={closeTab}
             onSave={save}
@@ -108,6 +111,8 @@ export default function EditorView({ state, theme }: Props): JSX.Element {
             value={active?.value ?? ''}
             readonly={active?.readonly ?? false}
             theme={theme}
+            fontSize={editorSettings.fontSize}
+            minimap={editorSettings.minimap}
             onChange={setActiveValue}
             onSave={save}
           />
