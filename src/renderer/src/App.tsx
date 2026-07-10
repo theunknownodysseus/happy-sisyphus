@@ -4,9 +4,11 @@ import { useState } from 'react'
 import ChangedFiles from './components/ChangedFiles'
 import EditorView from './components/EditorView'
 import PromptInput from './components/PromptInput'
+import ResizeHandle from './components/ResizeHandle'
 import Sidebar from './components/Sidebar'
 import TerminalPanel from './components/TerminalPanel'
 import Toolbar, { type AppView } from './components/Toolbar'
+import { useResizablePanel } from './hooks/useResizablePanel'
 import { useSession } from './hooks/useSession'
 import { useTheme } from './hooks/useTheme'
 
@@ -149,14 +151,19 @@ export default function App(): JSX.Element {
   const showSetup = view === 'chat' && SETUP_PHASES.has(state.phase)
   const showError = view === 'chat' && (state.phase === 'offline' || state.phase === 'error')
 
+  const sidebar = useResizablePanel({ key: 'bonsai:sidebarWidth', defaultWidth: 240, min: 180, max: 400, edge: 'right' })
+  const rightPanel = useResizablePanel({ key: 'bonsai:rightPanelWidth', defaultWidth: 240, min: 180, max: 420, edge: 'left' })
+
   return (
     <div className="flex flex-col h-screen bg-bg">
-      <div className="flex flex-1 min-h-0 gap-2.5 p-2.5">
+      <div className="flex flex-1 min-h-0 p-2.5">
         <Sidebar
+          width={sidebar.width}
           state={state}
           filesChanged={session.files.length}
           history={session.state.promptCount}
         />
+        <ResizeHandle onPointerDown={sidebar.onHandlePointerDown} />
 
         <main className="flex flex-1 min-w-0 flex-col rounded-xl bg-surface1 overflow-hidden">
           <Toolbar
@@ -192,7 +199,8 @@ export default function App(): JSX.Element {
           )}
         </main>
 
-        <ChangedFiles files={session.files} />
+        <ResizeHandle onPointerDown={rightPanel.onHandlePointerDown} />
+        <ChangedFiles width={rightPanel.width} files={session.files} />
       </div>
     </div>
   )

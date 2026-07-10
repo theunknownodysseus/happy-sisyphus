@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { ChangedFile } from '../../../shared/types'
 
 interface Props {
+  width: number
   files: ChangedFile[]
 }
 
@@ -13,7 +14,7 @@ const KIND_META: Record<ChangedFile['kind'], { icon: typeof FileText; cls: strin
   unlink: { icon: FileX, cls: 'text-danger' }
 }
 
-export default function ChangedFiles({ files }: Props): JSX.Element {
+export default function ChangedFiles({ width, files }: Props): JSX.Element {
   const [open, setOpen] = useState<string | null>(null)
   const [diff, setDiff] = useState<string>('')
 
@@ -29,7 +30,7 @@ export default function ChangedFiles({ files }: Props): JSX.Element {
   }
 
   return (
-    <aside className="w-60 shrink-0 flex flex-col rounded-xl bg-surface1">
+    <aside style={{ width }} className="shrink-0 flex flex-col rounded-xl bg-surface1 overflow-hidden">
       <div className="flex items-center justify-between px-4 h-[46px] shrink-0">
         <span className="text-[12.5px] font-semibold text-fg1">Changed Files</span>
         <span className="font-mono text-[11px] font-semibold text-fg3 bg-bg rounded-full px-2 py-0.5 tabular-nums">

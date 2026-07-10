@@ -2,6 +2,7 @@ import { Sprout } from 'lucide-react'
 import type { ChangedFile, SessionState } from '../../../shared/types'
 
 interface Props {
+  width: number
   state: SessionState
   filesChanged: number
   history: number
@@ -33,9 +34,12 @@ const STATUS_DOT: Record<SessionState['light'], string> = {
   red: 'bg-danger'
 }
 
-export default function Sidebar({ state, filesChanged, history }: Props): JSX.Element {
+export default function Sidebar({ width, state, filesChanged, history }: Props): JSX.Element {
   return (
-    <aside className="w-60 shrink-0 flex flex-col rounded-xl bg-surface1 p-3.5">
+    <aside
+      style={{ width }}
+      className="shrink-0 flex flex-col rounded-xl bg-surface1 p-3.5 overflow-hidden"
+    >
       <div className="flex items-center gap-[9px] px-1.5 mb-6">
         <div className="grid place-items-center h-[26px] w-[26px] rounded-[7px] bg-accent-bg shrink-0">
           <Sprout size={14} strokeWidth={1.75} className="text-accent" />
