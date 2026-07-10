@@ -3,13 +3,18 @@
 // a single update.
 
 import chokidar, { type FSWatcher } from 'chokidar'
+import type { Stats } from 'node:fs'
 import { relative, sep } from 'node:path'
 import type { ChangedFile } from '../shared/types'
 
 const IGNORED = [
-  /(^|[/\\])\../, // dotfiles/dirs (.git, .bonsai, ...)
+  /(^|[/\\])\.[^/\\]+/, // dotfiles/dirs (.git, .bonsai, ...)
   /node_modules/,
-  /[/\\](dist|build|out|coverage|\.next|\.turbo)([/\\]|$)/
+  /[/\\](dist|build|out|coverage|\.next|\.turbo)([/\\]|$)/,
+  // Windows profile junctions (Application Data, Cookies, NetHood, ...) are
+  // symlink-like reparse points the OS refuses to watch; skip anything
+  // lstat reports as a symlink instead of letting chokidar try and fail.
+  (_path: string, stats?: Stats) => Boolean(stats?.isSymbolicLink())
 ]
 
 export class FileWatcher {
@@ -28,6 +33,7 @@ export class FileWatcher {
       ignored: IGNORED,
       ignoreInitial: true,
       persistent: true,
+      followSymlinks: false,
       awaitWriteFinish: { stabilityThreshold: 200, pollInterval: 50 },
       depth: 12
     })
@@ -35,7 +41,9 @@ export class FileWatcher {
       .on('add', (p) => this.record(p, 'add'))
       .on('change', (p) => this.record(p, 'change'))
       .on('unlink', (p) => this.record(p, 'unlink'))
-      .on('error', (err) => console.error('[watcher] error:', err))
+      .on('error', (err: NodeJS.ErrnoException) =>
+        console.error(`[watcher] ${err.code ?? 'error'}: ${err.path ?? err.message}`)
+      )
   }
 
   private record(absPath: string, kind: ChangedFile['kind']): void {
